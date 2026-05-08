@@ -35,20 +35,43 @@ let allowedHosts: string[] | undefined = undefined;
 
 const allowAllHosts = process.env["ALLOW_ALL_HOSTS"] === "true";
 
-if (allowAllHosts) {
-  allowedHosts = undefined;
-} else {
-  allowedHosts = [];
-  switch (env) {
-    case "dev":
-      allowedHosts.push("ts.fhir-mcp.dev.promptopinion.ai");
-      break;
-    case "prod":
-      allowedHosts.push("ts.fhir-mcp.promptopinion.ai");
-      break;
-    default:
-      allowedHosts.push("localhost");
-  }
+if (allowedHosts && allowedHosts.length > 0) {
+  app.use((req, res, next) => {
+    const rawHost = req.headers.host;
+    const host = rawHost?.replace(/:\d+$/, "");
+
+    if (!host) {
+      return res.status(403).json({
+        jsonrpc: "2.0",
+        error: { code: -32000, message: "Missing Host header" },
+        id: null,
+      });
+    }
+
+    const isLocal =
+      host === "localhost" || host === "127.0.0.1";
+
+    const isAllowedExact = allowedHosts.includes(host);
+
+    const isRender = host.endsWith(".onrender.com");
+
+    const isProdDomain =
+      host === "ts.fhir-mcp.promptopinion.ai" ||
+      host === "ts.fhir-mcp.dev.promptopinion.ai";
+
+    if (!(isLocal || isAllowedExact || isRender || isProdDomain)) {
+      return res.status(403).json({
+        jsonrpc: "2.0",
+        error: {
+          code: -32000,
+          message: `Invalid Host: ${host}`,
+        },
+        id: null,
+      });
+    }
+
+    next();
+  });
 }
 
 const app = express();
