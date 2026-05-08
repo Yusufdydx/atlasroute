@@ -1,0 +1,131 @@
+# ATLASROUTE MCP - VERIFICATION & APPROACH DOCUMENTATION
+
+## Current Status - APPROVED APPROACH
+
+### Our Value Proposition (As Approved)
+
+We help people FIND healthcare facilities. We do NOT guarantee or claim:
+- Specific hospital capabilities (stroke center, cardiac cath lab, trauma level)
+- Verified specialty services
+- 24/7 availability
+- Current operational status
+
+### Safe Language Used
+
+| When User Asks | We Say |
+|----------------|--------|
+| "Find stroke hospital" | "Find hospitals - verify capability by calling ahead" |
+| "Find cardiac care" | "Find hospitals - verify cardiac services by calling" |
+| "Find 24/7 pharmacy" | "Find pharmacies - call to verify hours" |
+| "Which hospital handles emergencies" | "Find hospitals with emergency rooms - confirm with facility" |
+
+---
+
+## What Works (Verified)
+
+### Location Services ✅
+- Geocoding addresses to coordinates
+- Finding facilities from OpenStreetMap
+- Calculating routes and distances
+- Returning results with travel time
+
+### Facility Types ✅
+- Hospitals
+- Pharmacies  
+- Clinics
+- Dentists
+- Doctors/Physicians
+- All facility types combined
+
+### AI Features ✅
+- Specialty filtering (trauma, burn, stroke, pediatric, cardiac, rehabilitation)
+- Symptom triage for urgency assessment
+- FHIR integration for patient allergies
+- Route calculation
+
+---
+
+## What Requires Disclaimer
+
+### Filter Results
+When user filters by specialty, we return facilities with matching keywords in name/amenities, but ALWAYS include:
+- "Verify capabilities by calling facility directly"
+- "Hospital services may change"
+- "This is based on available information"
+
+### All Tool Outputs Include
+```
+verificationNote: "Verify capabilities by calling facility directly. Hospital services may change."
+```
+
+---
+
+## 8 Use Cases Supported
+
+1. 🚨 Emergency accidents - Find nearest hospital fast
+2. 👵 Elderly - Remember facility locations
+3. 🚖 Mobility workers - Find care while on road
+4. 🏕️ Tourists - Discover facilities in unknown areas
+5. 🧑‍🎓 Students - Locate care in new city
+6. 🏗️ Remote workers - Identify nearest facilities
+7. 🚨 Disaster scenarios - Find working facilities despite disruptions
+8. 🌍 Rural/underserved - Discover options they may not know exist
+
+---
+
+## Demo Talking Points (Safe)
+
+✅ DO SAY:
+- "AtlasRoute helps you find nearby healthcare facilities"
+- "Search for hospitals, pharmacies, clinics, dentists"
+- "Get directions to any healthcare facility"
+- "Filter by facility type - verify by calling ahead"
+- "Works with patient health records to consider allergies"
+
+❌ DON'T SAY:
+- "Find stroke centers" → Say "Find hospitals"
+- "Verified cardiac care" → Say "Find hospitals - verify cardiac capability"
+- "Guaranteed 24/7" → Say "Call to verify hours"
+
+---
+
+## Technical Verification
+
+### Tools Implemented (14 total)
+| Tool | Function | Status |
+|------|----------|---------|
+| FindHospitalsWithRouteTool | Hospital search + routing | ✅ With disclaimer |
+| FindNearbyFacilitiesTool | All facility types | ✅ With disclaimer |
+| FindPharmaciesTool | Pharmacy search | ✅ |
+| FindClinicsTool | Clinic search | ✅ |
+| FindDentistsTool | Dental search | ✅ |
+| GeocodeLocationTool | Address→coordinates | ✅ |
+| GetDistanceTool | Distance calculation | ✅ |
+| CalculateRouteTool | Route with directions | ✅ |
+| SymptomTriageTool | Urgency assessment | ✅ |
+| MedicalEvaluationTool | Medical query response | ✅ |
+| MedicalSummaryTool | Health summary | ✅ |
+| PatientAgeTool | Patient age from FHIR | ✅ |
+| PatientIdTool | Patient ID from FHIR | ✅ |
+
+---
+
+## Files Modified for Safe Approach
+
+1. `FindHospitalsWithRouteTool.ts` - Added verificationNote, removed confident capability claims
+2. `FindNearbyFacilitiesTool.ts` - Added verification disclaimer
+3. `ANALYSIS.md` - Complete rewrite with 8 use cases and real case studies
+4. All tool descriptions - Include "verify by calling" language
+
+---
+
+## Summary
+
+✅ We help people FIND facilities  
+✅ We provide ROUTES and DIRECTIONS  
+✅ We support MULTIPLE facility types  
+✅ We include DISCLOSURES about verification  
+❌ We do NOT guarantee medical capabilities  
+❌ We do NOT claim verified specialty services
+
+This approach is safe, honest, and positions us correctly for judges.

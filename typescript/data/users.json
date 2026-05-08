@@ -1,0 +1,56 @@
+[
+  {
+    "id": "user_1777410332096",
+    "email": "demo@test.com",
+    "name": "Demo User",
+    "passwordHash": "1620b1f137dfa373b077ad50bc877195101ba494aa61bf7e28097536d1c37021",
+    "createdAt": "2026-04-28T21:05:32.096Z",
+    "isActive": true
+  },
+  {
+    "id": "user_1777410495661",
+    "email": "yusufvabdullah001@gmail.com",
+    "name": "Yusuf Abdullahi ",
+    "passwordHash": "c93f091e9340ff7e6a6bf20cfb61078d0ef67fa0f7aec8361be3f8e5e74bb29e",
+    "createdAt": "2026-04-28T21:08:15.661Z",
+    "isActive": true
+  },
+  {
+    "id": "user_1777411720507",
+    "email": "yusufvsabdullah001@gmail.com",
+    "name": "Yusuf Abdullahi ",
+    "passwordHash": "c93f091e9340ff7e6a6bf20cfb61078d0ef67fa0f7aec8361be3f8e5e74bb29e",
+    "createdAt": "2026-04-28T21:28:40.507Z",
+    "isActive": true
+  },
+  {
+    "id": "user_1777486317903",
+    "email": "test2@test.com",
+    "name": "Test User",
+    "username": "test2user",
+    "country": "US",
+    "passwordHash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+    "createdAt": "2026-04-29T18:11:57.903Z",
+    "isActive": true
+  },
+  {
+    "id": "user_1777487373771",
+    "email": "john@test.com",
+    "name": "John Doe",
+    "username": "johndoe",
+    "country": "US",
+    "passwordHash": "c822a0abf4ef0a5fc2a4c2010ed111e16af3ae95cee462a55e7877b8623ade36",
+    "createdAt": "2026-04-29T18:29:33.771Z",
+    "isActive": true
+  },
+  {
+    "id": "user_1777488994288",
+    "email": "thexavceo@gmail.com",
+    "name": "Michelle",
+    "username": "angel",
+    "country": "JP",
+    "passwordHash": "c93f091e9340ff7e6a6bf20cfb61078d0ef67fa0f7aec8361be3f8e5e74bb29e",
+    "createdAt": "2026-04-29T18:56:34.289Z",
+    "isActive": true
+  }
+]

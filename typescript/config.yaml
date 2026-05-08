@@ -1,0 +1,45 @@
+fhir:
+  dev:
+    url: "https://dev-fhir.example.com/fhir"
+    timeout: 5000
+  staging:
+    url: "https://staging-fhir.example.com/fhir"
+    timeout: 10000
+  prod:
+    url: "https://prod-fhir.example.com/fhir"
+    timeout: 15000
+
+retry:
+  maxAttempts: 3
+  baseDelay: 1000
+  maxDelay: 10000
+  retryableErrors:
+    - ECONNREFUSED
+    - ETIMEDOUT
+    - ENOTFOUND
+    - socket
+
+rateLimit:
+  requestsPerMinute: 120
+  windowMs: 60000
+
+features:
+  auditLogging: true
+  fhirIntegration: true
+  specialtyFiltering: true
+  emergencyOverride: true
+  disclaimer: true
+
+logging:
+  level: "info"
+  format: "json"
+
+server:
+  port: 5000
+  host: "0.0.0.0"
+  cors:
+    enabled: true
+    origins:
+      - "localhost"
+      - "ts.fhir-mcp.dev.promptopinion.ai"
+      - "ts.fhir-mcp.promptopinion.ai"

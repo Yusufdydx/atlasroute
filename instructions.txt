@@ -1,0 +1,282 @@
+# MCP Tools Instructions
+
+This document contains the descriptions and instructions for all MCP (Model Context Protocol) tools in this project.
+
+---
+
+## 1. GenerateMedicalSummary
+
+**Description:** Generates a structured, comprehensive summary of the patient's current health issue and relevant medical context for healthcare professionals.
+
+**Input Schema:**
+- `triageData` (object): Data from SymptomTriage tool containing:
+  - `symptom` (string)
+  - `normalizedSymptom` (string)
+  - `category` (string)
+  - `severity` (string)
+  - `riskLevel` (string)
+  - `decision` (string)
+  - `findings` (array of strings)
+  - `reasoning` (array of strings)
+  - `responses` (array of objects with question and answer)
+- `includeHistory` (boolean, optional): Include patient's medical history in summary
+
+**Instructions:**
+RULES FOR AI:
+1. Use triageData from SymptomTriage tool - consolidate into structured summary.
+2. includeHistory determines if patient medical history included.
+3. Summary is FOR healthcare professionals - present clearly with relevant data sections.
+4. If requiresPatient=true: Need to identify patient first.
+5. Present summary data clearly organized - let AI format for professional presentation.
+6. Use conversation data from triage to ensure complete symptom presentation.
+
+---
+
+## 2. FindPharmacies
+
+**Description:** Finds pharmacies near a location using OpenStreetMap data (amenity=pharmacy). Use when user needs medications, health products, or medical supplies.
+
+**Input Schema:**
+- `location` (string): The location to search near (address, city, or lat,lon)
+- `radius` (number, optional): Search radius in meters (default: 5000)
+- `limit` (number, optional): Maximum results to return (default: 5)
+
+**Instructions:**
+RULES FOR AI:
+1. If results.length === 0: Suggest expanding radius or trying nearby areas. Follow-up: "Would you like me to search in a different location?"
+2. If results found: Present them with available info (name, address, phone). Let AI decide follow-up based on user context.
+3. If user provides symptoms needing medication: Use this tool, but let AI determine medication needs.
+4. If user asks for "medicine", "drugs", "tablets", "prescription": Use this tool automatically.
+5. Do NOT hardcode suggestions - let AI determine next actions based on user intent and data returned.
+6. After showing results, AI may suggest CalculateRoute if user needs directions.
+
+---
+
+## 3. FindClinics
+
+**Description:** Finds medical clinics near a location using OpenStreetMap data (amenity=clinic). Use for general health consultations, primary care, vaccinations, or non-emergency medical issues.
+
+**Input Schema:**
+- `location` (string): The location to search near (address, city, or lat,lon)
+- `radius` (number, optional): Search radius in meters (default: 5000)
+- `limit` (number, optional): Maximum results to return (default: 5)
+
+**Instructions:**
+RULES FOR AI:
+1. If results.length === 0: Suggest expanding radius or trying different location. Follow-up: "Would you like me to search nearby hospitals instead?"
+2. If results found: Present with available details. Let AI decide if user needs more info.
+3. If user has urgent but non-emergency issues: Use this tool first, then suggest FindHospitalsWithRoute if needed.
+4. If user asks for "doctor", "checkup", "vaccination", "general doctor": Use this tool.
+5. Do NOT hardcode suggestions - let AI determine next actions from data returned.
+
+---
+
+## 4. FindDentists
+
+**Description:** Finds dental clinics near a location using OpenStreetMap data (amenity=dentist). Use when user needs dental care, tooth problems, or oral health issues.
+
+**Input Schema:**
+- `location` (string): The location to search near (address, city, or lat,lon)
+- `radius` (number, optional): Search radius in meters (default: 5000)
+- `limit` (number, optional): Maximum results to return (default: 5)
+
+**Instructions:**
+RULES FOR AI:
+1. If results.length === 0: Data may not exist in OSM for this area. Suggest trying hospitals with dental services or general clinics.
+2. If results found: Present with available details. AI decides follow-up.
+3. If user has dental emergency: Suggest FindHospitalsWithRoute immediately.
+4. If user asks for "dentist", "tooth", "dental", "toothache": Use this tool.
+5. If no results in area: Inform user that OSM data may be incomplete and suggest alternatives.
+
+---
+
+## 5. FindHospitalsWithRoute
+
+**Description:** Finds hospitals near a location and calculates routes to each, including travel distance and time. Uses OpenStreetMap and routing services.
+
+**Input Schema:**
+- `location` (string): Your current location (address, city name, or 'lat,lon' coordinates)
+- `radius` (number, optional): Search radius in meters (default: 10000, max: 50000)
+- `travelMode` (enum, optional): Mode of transportation (driving, cycling, walking) - default: driving
+- `limit` (number, optional): Maximum number of hospitals to find (default: 5)
+
+**Instructions:**
+RULES FOR AI:
+1. For emergency situations: Prioritize this tool, but let AI determine urgency level from user context.
+2. If results.length === 0: Suggest expanding radius OR try FindNearbyFacilities as fallback.
+3. Route data (distance/time) provided - AI can determine if travel time is reasonable.
+4. If user says "emergency", "urgent", "critical": Use this tool but also suggest calling emergency services if severe.
+5. Do NOT fabricate suggestions - let AI use route data to inform user travel time.
+
+---
+
+## 6. FindNearbyFacilities
+
+**Description:** Finds nearby medical facilities (hospitals, clinics, pharmacies, doctors, dentists) based on location. Uses OpenStreetMap data.
+
+**Input Schema:**
+- `location` (string): The location to search near (can be an address, city name, or 'lat,lon' coordinates)
+- `radius` (number, optional): Search radius in meters (default: 5000)
+
+**Instructions:**
+RULES FOR AI:
+1. If results.length === 0: Suggest expanding radius. Follow-up: "Would you like me to try a larger area?"
+2. If multiple facility types found: AI presents all types to user, lets user choose which to focus on.
+3. facilityTypes returned in response - let AI decide what to highlight based on user context.
+4. For general medical searches: Use this tool.
+5. If user unsure what type needed: Use this tool first, then narrow down.
+
+---
+
+## 7. CalculateRoute
+
+**Description:** Calculates a route between two locations with turn-by-turn directions, travel time, and distance. Supports driving, cycling, and walking.
+
+**Input Schema:**
+- `fromLocation` (string): Starting location (address, city name, or 'lat,lon' coordinates)
+- `toLocation` (string): Destination location (address, city name, or 'lat,lon' coordinates)
+- `travelMode` (enum, optional): Mode of transportation (driving, cycling, walking) - default: driving
+- `includeSteps` (boolean, optional): Include detailed turn-by-turn directions
+
+**Instructions:**
+RULES FOR AI:
+1. Use route data returned (distance, duration) to inform user travel feasibility.
+2. If includeSteps=true: Present turn-by-turn directions. Otherwise just summary.
+3. After showing route, AI may suggest related tools based on user's potential needs (e.g., find facilities at destination).
+4. If user provides locations for facility search: Show route to that facility.
+
+---
+
+## 8. GetDistance
+
+**Description:** Calculates the route distance between two locations with estimated travel time. Useful for comparing travel distances.
+
+**Input Schema:**
+- `fromLocation` (string): Starting location (address, city name, or 'lat,lon' coordinates)
+- `toLocation` (string): Destination location (address, city name, or 'lat,lon' coordinates)
+- `travelMode` (enum, optional): Mode of transportation (driving, cycling, walking) - default: driving
+
+**Instructions:**
+RULES FOR AI:
+1. Use distance/duration data to inform user feasibility of travel.
+2. Let AI determine what is "reasonable" - don't hardcode thresholds.
+3. Use route data to inform subsequent decisions (e.g., if distance too far, suggest nearby alternatives).
+4. Combine with facility searches to find facilities within reasonable distance.
+
+---
+
+## 9. GeocodeLocation
+
+**Description:** Converts a location name or address into geographic coordinates. Also supports reverse geocoding - converting coordinates back to an address.
+
+**Input Schema:**
+- `location` (string, optional): The location to geocode (address, city name, or landmark)
+- `latitude` (number, optional): Latitude for reverse geocoding
+- `longitude` (number, optional): Longitude for reverse geocoding
+- `limit` (number, optional): Maximum number of results (default: 5)
+- `countryCode` (string, optional): Filter by country code (e.g., 'us', 'gb')
+
+**Instructions:**
+RULES FOR AI:
+1. Either location OR latitude/longitude required - can't do both in one call.
+2. If forward geocode: Present all results, let user choose if ambiguous.
+3. If reverse geocode: Single address returned - present clearly.
+4. Use results to seed other searches (facility finding, routing).
+5. If results have multiple matches: Present option for user to choose specific location.
+
+---
+
+## 10. FindPatientId
+
+**Description:** Finds a patient id given a first name and last name.
+
+**Input Schema:**
+- `firstName` (string): The patient's first name
+- `lastName` (string, optional): The patient's last name
+
+**Instructions:**
+RULES FOR AI:
+1. If results.length > 1: Present options, ask user to confirm which patient.
+2. If results.length === 1: Use this patient ID for subsequent calls.
+3. If results.length === 0: Suggest trying different name combination or partial match.
+4. After patient found: Set patient context for other tools to use.
+5. If requiresPatient flag appears in other tool responses: Use this tool first.
+
+---
+
+## 11. GetPatientAge
+
+**Description:** Gets the age of a patient.
+
+**Input Schema:**
+- `patientId` (string, optional): The id of the patient. This is optional if patient context already exists
+
+**Instructions:**
+RULES FOR AI:
+1. If patientId provided: Use it. If not, try to get from patient context.
+2. If requiresPatient=true: Need to identify patient first using FindPatientId.
+3. Age returned: Present to user. Use age data for any relevant medical context assessments.
+
+---
+
+## 12. EvaluateMedicalSuitability
+
+**Description:** Evaluates items against patient medical context. Returns data for AI response generation.
+
+**Input Schema:**
+- `target` (string): Item to evaluate
+- `targetDescription` (string, optional): Additional details
+- `userQuestion` (string, optional): User's question
+- `intent` (enum, optional): Evaluation type (appropriateness, necessity, risk, safety)
+
+**Instructions:**
+RULES FOR AI:
+1. Use patient context (medications, conditions, allergies) from returned data to evaluate item.
+2. intent determines evaluation focus: appropriateness (can use), necessity (should use), risk (warnings), safety (safe/dangerous).
+3. Present evaluation results but DO NOT provide medical advice - let professional handle.
+4. If requiresPatient=true: Need to identify patient first.
+5. For food/allergy evaluations: Use allergy data from patient context. For medicine interactions: Use medication list.
+6. AI determines follow-up based on user question and evaluation data returned.
+
+---
+
+## 13. SymptomTriage
+
+**Description:** Evaluates symptoms through adaptive questioning. Returns data for AI to generate responses.
+
+**Input Schema:**
+- `symptom` (string): User's symptom or health concern
+- `previousResponses` (array, optional): Previous Q&A (objects with question and answer)
+- `currentQuestion` (string, optional): Follow-up question to answer
+- `userAnswer` (string, optional): User's answer
+- `intent` (enum, optional): Intent (evaluate, askQuestion, classify)
+
+**Instructions:**
+RULES FOR AI:
+1. Use returned intent to determine how to respond (evaluate vs askQuestion vs classify).
+2. If assessment.category suggests severity: Let AI determine urgency level from symptom context.
+3. nextQuestion returned: If user hasn't answered it, ask the question. If answered, provide to tool in next call.
+4. conversationHints provided: Use these as guidance for response tone and content - DO NOT hardcode.
+5. DO NOT provide medical diagnosis - only present assessment data to user and let professional handle.
+6. If requiresPatient=true: Ask user for patient identification first.
+7. If tool returns error with requiresPatient: User needs linking to patient record before symptom triage.
+
+---
+
+## Summary Table
+
+| Tool Name | Description |
+|-----------|-------------|
+| GenerateMedicalSummary | Generates structured medical summary from triage data |
+| FindPharmacies | Finds pharmacies near a location using OSM |
+| FindClinics | Finds medical clinics near a location using OSM |
+| FindDentists | Finds dental clinics near a location using OSM |
+| FindHospitalsWithRoute | Finds hospitals and calculates routes with travel time/distance |
+| FindNearbyFacilities | Finds all medical facilities (hospitals, clinics, pharmacies, dentists) |
+| CalculateRoute | Calculates route between two locations with directions |
+| GetDistance | Calculates distance between two locations |
+| GeocodeLocation | Converts address to coordinates or reverse geocodes |
+| FindPatientId | Finds patient ID by first and last name |
+| GetPatientAge | Gets patient age |
+| EvaluateMedicalSuitability | Evaluates items against patient medical context |
+| SymptomTriage | Evaluates symptoms through adaptive questioning |
